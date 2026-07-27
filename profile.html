@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+  html, body, * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+
+body{
+  font-family: Arial;
+  background: #52717e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.profile-container{
+  background: #000000;
+  padding: 20px;
+  border-radius: 12px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.profile-img-box img{
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+button{
+  margin-top: 10px;
+  padding: 8px 15px;
+  border: none;
+  background: #569ca1;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+input{
+  width: 90%;
+  margin: 8px 0;
+  padding: 8px;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255,255,255,0.2);
+
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+.nav-item {
+  text-align: center;
+  text-decoration: none;
+  color: #aaa;
+  font-size: 12px;
+  transition: 0.3s;
+}
+
+.nav-item i {
+  display: block;
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.nav-item:hover {
+  color: #00eaff;
+}
+
+.nav-item.active {
+  color: #00eaff;
+}
+
+#toast{
+  position:fixed;
+  top:25px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,0.85);
+  color:white;
+  padding:14px 25px;
+  border-radius:12px;
+  font-size:14px;
+  box-shadow:0 0 20px #00ffff;
+  opacity:0;
+  pointer-events:none;
+  transition:0.3s;
+  z-index:9999;
+}
+
+#toast.show{
+  opacity:1;
+  top:40px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="profile-container">
+
+  <!-- Image -->
+  <div class="profile-img-box">
+    <img id="profilePic" src="https://via.placeholder.com/100">
+    <input type="file" id="upload" hidden>
+    <br>
+  <button id="uploadBtn" onclick="uploadImg()">Change Photo</button>
+  </div>
+
+  <!-- Info -->
+  <div class="profile-info">
+    <input type="text" id="username" placeholder="Username">
+    <input type="email" id="email" placeholder="Email">
+    <button onclick="saveProfile()">Save Changes</button>
+    <br><br>
+    <button onclick="logoutUser()">Logout</button>
+  </div>
+
+</div>
+
+<script type="module" src="profile.js"></script>
+
+<style>
+
+  /* ===== PHOENIX TK NEON GAMING UPGRADE ===== */
+
+
+*{
+  box-sizing:border-box;
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:'Orbitron',sans-serif !important;
+  background:
+    radial-gradient(circle at top left, rgba(0,255,255,.15), transparent 25%),
+    radial-gradient(circle at bottom right, rgba(140,0,255,.15), transparent 25%),
+    linear-gradient(135deg,#050816,#0b1023,#090014) !important;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+.login-card,
+.card,
+.payment-box,
+.topup-box{
+  backdrop-filter: blur(14px);
+  background: rgba(255,255,255,0.06) !important;
+  border:1px solid rgba(0,255,255,.25) !important;
+  box-shadow:
+    0 0 12px rgba(0,255,255,.25),
+    0 0 35px rgba(140,0,255,.15);
+  border-radius:22px !important;
+}
+
+.card{
+  transition:all .35s ease;
+}
+
+.card:hover{
+  transform:translateY(-8px) scale(1.02);
+  box-shadow:
+    0 0 20px #00ffff,
+    0 0 40px rgba(0,255,255,.7),
+    0 0 60px rgba(128,0,255,.4);
+}
+
+button,
+.btn,
+.submit-btn{
+  background:linear-gradient(90deg,#00f0ff,#7a00ff) !important;
+  color:white !important;
+  border:none !important;
+  border-radius:14px !important;
+  padding:12px 20px !important;
+  font-weight:700 !important;
+  letter-spacing:1px;
+  transition:.3s ease;
+  box-shadow:0 0 18px rgba(0,255,255,.4);
+}
+
+button:hover,
+.btn:hover,
+.submit-btn:hover{
+  transform:scale(1.05);
+  box-shadow:
+    0 0 15px #00ffff,
+    0 0 30px #7a00ff;
+}
+
+input,
+select,
+textarea{
+  background:rgba(0,0,0,.45) !important;
+  border:1px solid rgba(0,255,255,.35) !important;
+  color:white !important;
+  border-radius:14px !important;
+  padding:12px !important;
+  outline:none;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+  box-shadow:0 0 15px rgba(0,255,255,.6);
+}
+
+
+.back{
+  background:linear-gradient(90deg,#00e5ff,#8a2eff) !important;
+  color:white !important;
+  border-radius:12px !important;
+  box-shadow:0 0 15px rgba(0,255,255,.6);
+}
+
+::-webkit-scrollbar{
+  width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+  background:linear-gradient(#00ffff,#7a00ff);
+  border-radius:10px;
+}
+
+@media(max-width:768px){
+  .card{
+    padding:16px !important;
+  }
+
+  h1,h2{
+    font-size:22px !important;
+  }
+}
+
+</style>
+
+<div class="bottom-nav">
+
+  <a href="home.html" class="nav-item active">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+  </a>
+
+  <a href="topup.html" class="nav-item">
+    <i class="fas fa-gem"></i>
+    <span>Shop</span>
+  </a>
+
+  <a href="payment.html" class="nav-item">
+    <i class="fas fa-bolt"></i>
+    <span>Payment</span>
+  </a>
+
+  <a href="history.html" class="nav-item">
+  <i class="fas fa-clock-rotate-left"></i>
+  <span>History</span>
+</a>
+
+  <a href="profile.html" class="nav-item">
+    <i class="fas fa-user"></i>
+    <span>Profile</span>
+  </a>
+
+</div>
+
+<div id="toast"></div>
+
+</body>
+
+</html>

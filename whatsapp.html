@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Contact us</title>
+  <link rel="icon" href="1.jpg">
+  <link rel="stylesheet" href="whatsapp.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+
+    html, body, * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+
+    body {
+      margin:0;
+      font-family:'Poppins',sans-serif;
+      background: linear-gradient(135deg,#0f172a,#1e293b);
+      color:white;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+    }
+
+    .box {
+      text-align:center;
+      background: rgba(255,255,255,0.05);
+      padding:40px;
+      border-radius:20px;
+      backdrop-filter: blur(15px);
+    }
+
+    button {
+      padding:12px 25px;
+      border:none;
+      border-radius:12px;
+      background:linear-gradient(45deg,#25D366,#128C7E);
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="neon-bg"></div>
+<style>
+.neon-bg{
+position:fixed;
+inset:0;
+pointer-events:none;
+background:
+radial-gradient(circle at 20% 20%, rgba(0,255,255,.12), transparent 20%),
+radial-gradient(circle at 80% 30%, rgba(140,0,255,.15), transparent 20%),
+radial-gradient(circle at 50% 80%, rgba(255,0,200,.10), transparent 20%);
+animation: pulseBg 6s infinite alternate;
+z-index:-1;
+}
+@keyframes pulseBg{
+from{transform:scale(1);}
+to{transform:scale(1.08);}
+}
+</style>
+
+
+    <button class="back" onclick="goBack()">⬅ Back</button>
+
+<script>
+function goBack(){
+  window.location.href = "home.html";
+}
+</script>
+
+<div class="box">
+
+<h2>📲 Contact Support</h2>
+
+<button onclick="chat()">Chat on WhatsApp</button>
+
+</div>
+
+<script>
+function chat(){
+  const num="94755377823";
+  const msg="Hi Bro";
+
+  window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`);
+}
+</script>
+
+<div class="bottom-nav">
+
+  <a href="home.html" class="nav-item active">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+  </a>
+
+  <a href="topup.html" class="nav-item">
+    <i class="fas fa-gem"></i>
+    <span>Shop</span>
+  </a>
+
+  <a href="payment.html" class="nav-item">
+    <i class="fas fa-bolt"></i>
+    <span>Payment</span>
+  </a>
+
+  <a href="history.html" class="nav-item">
+  <i class="fas fa-clock-rotate-left"></i>
+  <span>History</span>
+</a>
+
+  <a href="profile.html" class="nav-item">
+    <i class="fas fa-user"></i>
+    <span>Profile</span>
+  </a>
+
+</div>
+
+</body>
+</html>

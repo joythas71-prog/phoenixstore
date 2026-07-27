@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Order Details</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="OrderDetails.css">
+  <link rel="icon" href="1.jpg">
+
+</head>
+
+<body>
+
+<div class="container">
+
+
+  <!-- ORDER CARD -->
+
+  <div class="card">
+
+    <div class="title">
+      🎮 Order Details
+    </div>
+
+
+    <!-- UID -->
+
+    <input
+    type="text"
+    id="uid"
+    placeholder="Enter Game UID">
+
+
+    <!-- TOPUP -->
+
+    <input
+    type="text"
+    id="diamond"
+    readonly>
+
+
+    <!-- RECEIPT -->
+
+    <div class="upload-box">
+
+      <h2>Upload Receipt</h2>
+
+      <label
+      for="photo"
+      class="custom-file">
+
+        Choose Receipt
+
+      </label>
+
+      <input
+      type="file"
+      id="photo"
+      accept="image/*">
+
+      <p id="fileText"></p>
+
+      <img id="previewImage" src="" alt="Receipt Preview">
+
+      <!-- SUBMIT BUTTON -->
+
+      <button onclick="submitOrder()">
+
+        Submit Top Up
+
+      </button>
+
+      <p id="msg"></p>
+
+    </div>
+
+
+    <!-- INFO -->
+
+    <div class="preview">
+
+      📌 Complete payment and upload receipt to confirm your order.
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyABYByDW8bAOCHfCwcRNaSN1wwifQEhzA4",
+  authDomain: "freefiretopup-bbb23.firebaseapp.com",
+  projectId: "freefiretopup-bbb23",
+  storageBucket: "freefiretopup-bbb23.firebasestorage.app",
+  messagingSenderId: "305435218774",
+  appId: "1:305435218774:web:d258e8218bd1bdec50fcf7",
+  measurementId: "G-HLNGZ236PZ"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function saveOrder(uid,item){
+
+  await addDoc(collection(db,"orders"),{
+    uid: uid,
+    topup: item,
+    status: "pending",
+    userId: localStorage.getItem("userId"),
+    createdAt: Date.now()
+  });
+
+}
+
+
+// FILE SELECT TEXT
+
+const photo =
+document.getElementById("photo");
+
+const fileText =
+document.getElementById("fileText");
+
+const previewImage =
+document.getElementById("previewImage");
+
+photo.addEventListener("change", ()=>{
+
+ const file = photo.files[0];
+
+ if(file){
+
+   fileText.innerText = "Receipt Selected ✅";
+
+   const reader = new FileReader();
+
+   reader.onload = function(e){
+
+      previewImage.src = e.target.result;
+      previewImage.style.display = "block";
+
+   };
+
+   reader.readAsDataURL(file);
+
+ }
+
+});
+
+
+
+
+// BACK BUTTON
+
+function goBack(){
+
+ window.location.href =
+ "home.html";
+
+}
+
+
+
+
+// AUTO FILL TOPUP
+
+window.onload = function(){
+
+ const item =
+ localStorage.getItem("selectedTopup");
+
+ if(item){
+
+  document.getElementById("diamond").value =
+  item;
+
+ }
+
+};
+
+
+
+
+// MAIN SUBMIT FUNCTION
+
+window.submitOrder = async function(){
+
+
+ // INPUTS
+
+ const uidInput =
+ document.getElementById("uid");
+
+ const uid =
+ uidInput.value;
+
+ const item =
+ document.getElementById("diamond").value;
+
+ const file =
+ document.getElementById("photo").files[0];
+
+ const msg =
+ document.getElementById("msg");
+
+
+
+ // RESET
+
+ uidInput.classList.remove("error");
+
+ uidInput.classList.remove("success");
+
+
+
+ // UID CHECK
+
+ if(uid === ""){
+
+  uidInput.classList.add("error");
+
+  uidInput.placeholder =
+  "⚠ Enter UID";
+
+  return;
+
+ }else{
+
+  uidInput.classList.add("success");
+
+ }
+
+
+
+ // RECEIPT CHECK
+
+ if(!file){
+
+  msg.innerText =
+  "Select Receipt ⚠";
+
+  msg.style.opacity = "1";
+
+  setTimeout(()=>{
+
+   msg.style.opacity = "0";
+
+  },1000);
+
+  return;
+
+ }
+
+
+
+ // LOADING MESSAGE
+
+ msg.innerText =
+ "Sending Receipt...";
+
+ msg.style.opacity =
+ "1";
+
+
+
+ // TELEGRAM DATA
+
+ const formData =
+ new FormData();
+
+ formData.append(
+  "chat_id",
+  "7090493537"
+ );
+
+ formData.append(
+  "photo",
+  file
+ );
+
+ formData.append(
+  "caption",
+
+`🎮 New Order
+
+UID: ${uid}
+
+Top Up: ${item}`
+
+ );
+
+
+
+ try{
+
+
+  // SEND PHOTO TO TELEGRAM FIRST
+
+  const response =
+  await fetch(
+
+  "https://api.telegram.org/bot8960233712:AAFe7KEsj2BLb4AjwIiy5KQEdlke8CFmeLw/sendPhoto",
+
+  {
+
+   method:"POST",
+
+   body: formData
+
+  }
+
+  );
+
+
+  const result =
+  await response.json();
+
+
+
+  // SUCCESS CHECK
+
+  if(result.ok){
+
+await saveOrder(uid,item);
+
+   msg.innerText =
+   "Sent To Admin ✅";
+
+
+
+   // WHATSAPP MESSAGE
+
+   const number =
+   "94755377823";
+
+
+   const message =
+
+`Hi Bro,
+UID: ${uid}
+Selected: ${item}
+Payment Done.`;
+
+
+   const url =
+
+   "https://wa.me/" +
+   number +
+   "?text=" +
+   encodeURIComponent(message);
+
+
+
+
+   // OPEN WHATSAPP AFTER SUCCESS
+
+   setTimeout(()=>{
+
+    window.location.href =
+    url;
+
+   },1000);
+
+  }else{
+   msg.innerText =
+   "Telegram Send Failed ⚠";
+  }
+
+ }catch(error){
+  msg.innerText =
+  "Network Error ⚠";
+ }
+
+ setTimeout(()=>{
+  msg.style.opacity =
+  "0";
+ },3000);
+
+}
+</script>
+<div class="bottom-nav">
+
+  <a href="home.html" class="nav-item active">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+  </a>
+
+  <a href="topup.html" class="nav-item">
+    <i class="fas fa-gem"></i>
+    <span>Shop</span>
+  </a>
+
+  <a href="payment.html" class="nav-item">
+    <i class="fas fa-bolt"></i>
+    <span>Payment</span>
+  </a>
+
+  <a href="history.html" class="nav-item">
+  <i class="fas fa-clock-rotate-left"></i>
+  <span>History</span>
+</a>
+
+  <a href="profile.html" class="nav-item">
+    <i class="fas fa-user"></i>
+    <span>Profile</span>
+  </a>
+
+</div>
+</body>
+</html>

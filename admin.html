@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="media.css">
+<style>
+
+  html, body, * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+
+#loadingIcon{
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading-text{
+  margin-top: 20px;
+  color: #00eaff;
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 3px;
+}
+
+.dot-spinner{
+position:relative;
+width:80px;
+height:80px;
+}
+
+.dot-spinner div{
+position:absolute;
+width:12px;
+height:12px;
+background:#38bdf8;
+border-radius:50%;
+animation:spinDots 1.2s linear infinite;
+}
+
+.dot-spinner div:nth-child(1){top:0;left:34px;}
+.dot-spinner div:nth-child(2){top:10px;right:10px;}
+.dot-spinner div:nth-child(3){top:34px;right:0;}
+.dot-spinner div:nth-child(4){bottom:10px;right:10px;}
+.dot-spinner div:nth-child(5){bottom:0;left:34px;}
+.dot-spinner div:nth-child(6){bottom:10px;left:10px;}
+.dot-spinner div:nth-child(7){top:34px;left:0;}
+.dot-spinner div:nth-child(8){top:10px;left:10px;}
+
+@keyframes spinDots{
+0%{opacity:1;}
+100%{opacity:.2;}
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial;
+}
+
+body {
+  display: flex;
+  background: #0f172a;
+  color: white;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  height: 100vh;
+  background: #020617;
+  padding: 20px;
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #38bdf8;
+}
+
+.sidebar button {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  background: #1e293b;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sidebar button:hover {
+  background: #38bdf8;
+  color: black;
+}
+
+/* Main */
+.main {
+  flex: 1;
+  padding: 20px;
+}
+
+/* Top bar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.logout {
+  background: red;
+  border: none;
+  padding: 10px 20px;
+  color: white;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+/* Cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 20px;
+}
+
+.card {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.card p {
+  font-size: 22px;
+  color: #38bdf8;
+}
+
+/* Content box */
+.content {
+  margin-top: 30px;
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+
+  .sidebar{
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+
+  .main-content{
+    margin-left: 0;
+    padding: 10px;
+  }
+
+  .cards{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .card{
+    width: 100%;
+  }
+
+  .content{
+    padding: 10px;
+    overflow-x: auto;
+  }
+
+  button{
+    width: 100%;
+    margin-top: 5px;
+  }
+
+  .order-card{
+    font-size: 14px;
+  }
+
+}
+
+</style>
+
+</head>
+
+<body>
+<div id="loadingIcon">
+  <div class="dot-spinner">
+    <div></div><div></div><div></div><div></div>
+    <div></div><div></div><div></div><div></div>
+  </div>
+
+  <p class="loading-text">Loading...</p>
+</div>
+
+<div class="neon-bg"></div>
+<style>
+.neon-bg{
+position:fixed;
+inset:0;
+pointer-events:none;
+background:
+radial-gradient(circle at 20% 20%, rgba(0,255,255,.12), transparent 20%),
+radial-gradient(circle at 80% 30%, rgba(140,0,255,.15), transparent 20%),
+radial-gradient(circle at 50% 80%, rgba(255,0,200,.10), transparent 20%);
+animation: pulseBg 6s infinite alternate;
+z-index:-1;
+}
+@keyframes pulseBg{
+from{transform:scale(1);}
+to{transform:scale(1.08);}
+}
+</style>
+
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <h2>ADMIN</h2>
+
+  <button onclick="showDashboard()">🏠 Home</button>
+  <button onclick="viewUsers()">👤 Users</button>
+  <button onclick="viewOrders()">📦 Orders</button>
+  <button onclick="viewTopups()">✅ Success</button>
+  <button onclick="viewRejected()">❌ Rejected</button>
+  <button onclick="viewPending()">⏳ Pending</button>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <div class="topbar">
+    <h1>Admin Penal</h1>
+  </div>
+
+  <!-- Cards -->
+  <div class="cards">
+    <div class="card">
+      <h3>Total Users</h3>
+      <p id="usersCount">0</p>
+    </div>
+
+    <div class="card">
+      <h3>Total Orders</h3>
+      <p id="ordersCount">0</p>
+    </div>
+
+    <div class="card">
+      <h3>Success Topups</h3>
+      <p id="topupCount">0</p>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content" id="contentBox">
+  Dashboard Overview 📊
+  </div>
+  
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyABYByDW8bAOCHfCwcRNaSN1wwifQEhzA4",
+  authDomain: "freefiretopup-bbb23.firebaseapp.com",
+  projectId: "freefiretopup-bbb23"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// 🔒 Protect admin page
+if (localStorage.getItem("admin") !== "true") {
+  window.location.href = "index.html";
+}
+
+// Logout
+window.logout = function () {
+  signOut(auth).then(() => {
+    localStorage.removeItem("admin");
+    window.location.href = "index.html";
+  });
+};
+
+const box = document.getElementById("contentBox");
+
+// Dashboard
+window.showDashboard = async function () {
+
+  const usersSnap = await getDocs(collection(db, "users"));
+  const ordersSnap = await getDocs(collection(db, "orders"));
+
+  let totalUsers = usersSnap.size;
+  let totalOrders = ordersSnap.size;
+
+  let success = 0;
+  let rejected = 0;
+  let pending = 0;
+
+  ordersSnap.forEach((doc) => {
+    const data = doc.data();
+
+    if(data.status === "success") success++;
+   else if(data.status === "reject") rejected++;
+    else pending++;
+  });
+
+  let successPer = totalOrders ? ((success / totalOrders) * 100).toFixed(0) : 0;
+  let rejectPer = totalOrders ? ((rejected / totalOrders) * 100).toFixed(0) : 0;
+  let pendingPer = totalOrders ? ((pending / totalOrders) * 100).toFixed(0) : 0;
+
+  box.innerHTML = `
+  <h2>📊 Dashboard Analytics</h2><br>
+
+  <div class="cards">
+    <div class="card">
+      <h3>👤 Users</h3>
+      <p>${totalUsers}</p>
+    </div>
+
+    <div class="card">
+      <h3>📦 Orders</h3>
+      <p>${totalOrders}</p>
+    </div>
+
+    <div class="card">
+      <h3>✅ Success</h3>
+      <p>${successPer}%</p>
+    </div>
+
+    <div class="card">
+      <h3>❌ Rejected</h3>
+      <p>${rejectPer}%</p>
+    </div>
+
+    <div class="card">
+      <h3>🟡 Pending</h3>
+      <p>${pendingPer}%</p>
+    </div>
+  </div>
+  `;
+}
+
+// 🔥 Users (Firestore)
+window.viewUsers = async function () {
+
+  const snapshot = await getDocs(collection(db, "users"));
+
+  let html = "<h2>👤 Users List</h2><br>";
+
+  snapshot.forEach((doc) => {
+    let data = doc.data();
+
+    html += `
+      <p>
+        👤 ${data.name} <br>
+        📧 ${data.email}
+      </p>
+      <hr>
+    `;
+  });
+
+  box.innerHTML = html;
+};
+
+// Other buttons
+window.viewTopups = async function () {
+
+  const snapshot = await getDocs(collection(db, "orders"));
+
+  let html = "<h2>💰 Successful Topups</h2><br>";
+
+  snapshot.forEach((doc) => {
+
+    let data = doc.data();
+
+    if (data.status === "success") {
+
+      html += `
+      <div style="
+        background:#0f172a;
+        padding:15px;
+        margin-bottom:10px;
+        border-radius:10px;
+      ">
+        <p>🎮 UID : ${data.uid}</p>
+        <p>💎 Topup : ${data.topup}</p>
+        <p style="color:lime;">✅ Status : success</p>
+        <p>👤 User ID : ${data.userId}</p>
+      </div>
+      `;
+    }
+  });
+
+  box.innerHTML = html;
+};
+
+window.viewOrders = async function () {
+
+  const snapshot = await getDocs(collection(db, "orders"));
+
+let html = `
+<h2>📦 Orders List</h2><br>
+
+<input
+id="searchUser"
+type="text"
+placeholder="Search User ID..."
+onkeyup="searchOrder()"
+style="
+width:100%;
+padding:10px;
+margin-bottom:15px;
+border-radius:10px;
+">
+`;
+
+  if (snapshot.empty) {
+    html += "<p>No Orders Found</p>";
+  }
+
+  snapshot.forEach((doc) => {
+
+    let data = doc.data();
+
+    html += `
+    <div style="
+      background:#0f172a;
+      padding:15px;
+      margin-bottom:10px;
+      border-radius:10px;
+    ">
+
+      <p>🎮 UID : ${data.uid}</p>
+
+      <p>💎 Topup : ${data.topup}</p>
+
+ <p>👤 User ID : ${data.userId}</p>
+ <p>
+📌 Status :
+<span style="
+color:${
+data.status === 'success'
+? 'lime'
+: data.status === 'reject'
+? 'red'
+: 'orange'
+}">
+${data.status || 'pending'}
+</span>
+</p>
+
+<br>
+
+<button onclick="setStatus('${doc.id}','pending')">
+🟡 Pending
+</button>
+
+<button onclick="setStatus('${doc.id}','success')">
+✅ Success
+</button>
+
+<button onclick="setStatus('${doc.id}','reject')">
+❌ Reject
+</button>
+
+    </div>
+    `;
+  });
+
+  box.innerHTML = html;
+};
+
+// 🔥 Load counts
+async function loadCounts() {
+
+  const usersSnap =
+  await getDocs(collection(db, "users"));
+
+  document.getElementById("usersCount").innerText =
+  usersSnap.size;
+
+  const ordersSnap =
+  await getDocs(collection(db, "orders"));
+
+  document.getElementById("ordersCount").innerText =
+  ordersSnap.size;
+
+let successCount = 0;
+
+ordersSnap.forEach((doc) => {
+
+  const data = doc.data();
+
+  if (data.status === "success") {
+    successCount++;
+  }
+
+});
+
+document.getElementById("topupCount").innerText =
+successCount;
+
+document.getElementById("loadingIcon").style.display = "none";
+
+
+}
+
+loadCounts();
+showDashboard();
+
+window.setStatus = async function(id,status){
+
+  await updateDoc(
+    doc(db,"orders",id),
+    {
+      status: status
+    }
+  );
+
+const msg = document.createElement("div");
+
+msg.innerText = "Status Updated ✅";
+
+msg.style.position = "fixed";
+msg.style.top = "20px";
+msg.style.right = "20px";
+msg.style.background = "green";
+msg.style.color = "white";
+msg.style.padding = "10px";
+msg.style.borderRadius = "8px";
+
+document.body.appendChild(msg);
+
+setTimeout(() => {
+  msg.remove();
+}, 2000);
+
+  viewOrders();
+}
+
+window.viewRejected = async function () {
+
+  const snapshot = await getDocs(collection(db, "orders"));
+
+  let html = "<h2>❌ Rejected Orders</h2><br>";
+
+  snapshot.forEach((doc) => {
+
+    let data = doc.data();
+
+    if (data.status === "reject") {
+
+      html += `
+      <div style="
+        background:#0f172a;
+        padding:15px;
+        margin-bottom:10px;
+        border-radius:10px;
+      ">
+        <p>🎮 UID : ${data.uid}</p>
+        <p>💎 Topup : ${data.topup}</p>
+        <p style="color:red;">❌ Status : reject</p>
+        <p>👤 User ID : ${data.userId}</p>
+      </div>
+      `;
+    }
+
+  });
+
+  box.innerHTML = html;
+};
+
+window.viewPending = async function () {
+
+  const snapshot = await getDocs(collection(db, "orders"));
+
+  let html = "<h2>⏳ Pending Orders</h2><br>";
+
+  snapshot.forEach((doc) => {
+
+    let data = doc.data();
+
+    if (
+      data.status === "pending" ||
+      !data.status
+    ) {
+
+      html += `
+      <div style="
+        background:#0f172a;
+        padding:15px;
+        margin-bottom:10px;
+        border-radius:10px;
+      ">
+        <p>🎮 UID : ${data.uid}</p>
+        <p>💎 Topup : ${data.topup}</p>
+        <p style="color:orange;">⏳ Status : pending</p>
+        <p>👤 User ID : ${data.userId}</p>
+      </div>
+      `;
+    }
+
+  });
+
+  box.innerHTML = html;
+};
+
+window.searchOrder = async function () {
+
+const search =
+document.getElementById("searchUser")
+.value
+.toLowerCase();
+
+const snapshot =
+await getDocs(collection(db,"orders"));
+
+let html = `
+<h2>📦 Search Results</h2><br>
+`;
+
+snapshot.forEach((doc)=>{
+
+const data = doc.data();
+
+if(
+data.userId &&
+data.userId.toLowerCase().includes(search)
+){
+
+html += `
+<div style="
+background:#0f172a;
+padding:15px;
+margin-bottom:10px;
+border-radius:10px;
+">
+<p>🎮 UID : ${data.uid}</p>
+<p>💎 Topup : ${data.topup}</p>
+<p>👤 User ID : ${data.userId}</p>
+<p>📌 Status : ${data.status}</p>
+</div>
+`;
+}
+
+});
+
+box.innerHTML = html;
+
+}
+
+</script>
+
+</body>
+</html>

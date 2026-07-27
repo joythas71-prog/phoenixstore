@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Payment</title>
+  <link rel="stylesheet" href="payment.css">
+  <link rel="icon" href="1.jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- Payment Details -->
+
+  <div class="card">
+
+    <div class="title">
+        💳 Payment Details
+    </div>
+    
+
+<!-- HNB BANK -->
+<div class="payment-box">
+    <button class="copy-btn" onclick="copyPayment(this)">📋</button>
+
+    <div class="copy-content">
+        <h3>🏦 HNB BANK</h3>
+
+        <p><b>Account No:</b>
+            <span class="highlight">134020110640</span>
+        </p>
+
+        <p><b>Name:</b>
+            <span class="highlight">JOYTHAS K</span>
+        </p>
+
+        <p><b>Branch:</b>
+            <span class="highlight">THIRUKKOVIL</span>
+        </p>
+    </div>
+</div>
+
+
+<!-- BOC BANK -->
+<div class="payment-box">
+    <button class="copy-btn" onclick="copyPayment(this)">📋</button>
+
+    <div class="copy-content">
+        <h3>🏦 BOC BANK</h3>
+
+        <p><b>Account No:</b>
+            <span class="highlight">96644532</span>
+        </p>
+
+        <p><b>Name:</b>
+            <span class="highlight">JOYTHAS K</span>
+        </p>
+
+        <p><b>Branch:</b>
+            <span class="highlight">THIRUKKOVIL</span>
+        </p>
+    </div>
+</div>
+
+
+<!-- eZ Cash -->
+<div class="payment-box">
+    <button class="copy-btn" onclick="copyPayment(this)">📋</button>
+
+    <div class="copy-content">
+        <h3>📱 eZ Cash</h3>
+
+        <p><b>Number:</b>
+            <span class="highlight">0771945590</span>
+        </p>
+
+        <p><b>Name:</b>
+            <span class="highlight">JOYTHAS K</span>
+        </p>
+    </div>
+
+    <div class="note-box">
+        ⚠️ Note: eZ Cash payment pannum pothu
+        <b>Rs.20 extra</b> pay pannunga
+    </div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+function copyPayment(button) {
+
+    const box = button.closest('.payment-box');
+    const content = box.querySelector('.copy-content');
+
+    const text = content.innerText;
+
+    navigator.clipboard.writeText(text).then(() => {
+
+        const oldText = button.innerText;
+
+        button.innerText = "✅";
+
+        setTimeout(() => {
+            button.innerText = oldText;
+        }, 1500);
+
+    });
+}
+</script>
+
+<div class="bottom-nav">
+
+  <a href="home.html" class="nav-item active">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+  </a>
+
+  <a href="topup.html" class="nav-item">
+    <i class="fas fa-gem"></i>
+    <span>Shop</span>
+  </a>
+
+  <a href="payment.html" class="nav-item">
+    <i class="fas fa-bolt"></i>
+    <span>Payment</span>
+  </a>
+
+  <a href="history.html" class="nav-item">
+  <i class="fas fa-clock-rotate-left"></i>
+  <span>History</span>
+</a>
+
+  <a href="profile.html" class="nav-item">
+    <i class="fas fa-user"></i>
+    <span>Profile</span>
+  </a>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Top Up List</title>
+  <link rel="icon" href="1.jpg">
+  <link rel="stylesheet" href="topup.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<div class="neon-bg"></div>
+
+<h2>🔥 Top Up List</h2>
+
+<h3>🔥 Membership</h3>
+
+<div class="product-grid">
+
+<div class="product-card" onclick="selectItem('Weekly Lite Membership (150/=)', 'Membership')">
+<img src="M-0.jpg">
+<h4>Weekly Lite</h4>
+<p>150/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('Weekly Membership (600/=)', 'Membership')">
+<img src="M-1.jpg">
+<h4>Weekly</h4>
+<p>600/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('Monthly Membership (2700/=)', 'Membership')">
+<img src="M-2.jpg">
+<h4>Monthly</h4>
+<p>2700/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('VIP Membership (3300/=)', 'Membership')">
+<img src="M-3.jpg">
+<h4>VIP</h4>
+<p>3300/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('S VIP Membership (5100/=)', 'Membership')">
+<img src="M-4.jpg">
+<h4>S VIP</h4>
+<p>5100/=</p>
+</div>
+
+</div>
+
+
+<h3>💎 Diamonds</h3>
+
+<div class="product-grid">
+
+<div class="product-card" onclick="selectItem('25 Diamonds (130/=)', 'Diamonds')">
+<img src="D-2.jpg">
+<h4>25 💎</h4>
+<p>130/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('100 Diamonds (380/=)', 'Diamonds')">
+<img src="D-2.jpg">
+<h4>100 💎</h4>
+<p>380/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('310 Diamonds (1100/=)', 'Diamonds')">
+<img src="D-2.jpg">
+<h4>310 💎</h4>
+<p>1100/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('520 Diamonds (1700/=)', 'Diamonds')">
+<img src="D-2.jpg">
+<h4>520 💎</h4>
+<p>1700/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('1060 Diamonds (3300/=)', 'Diamonds')">
+<img src="D-2.jpg">
+<h4>1060 💎</h4>
+<p>3300/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('2180 Diamonds (6400/=)', 'Diamonds')">
+<img src="D-2.jpg">
+<h4>2180 💎</h4>
+<p>6400/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('5600 Diamonds (16500/=)', 'Diamonds')">
+<img src="D-2.jpg">
+<h4>5600 💎</h4>
+<p>16500/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('11500 Diamonds (33000/=)', 'Diamonds')">
+<img src="D-2.jpg">
+<h4>11500 💎</h4>
+<p>33000/=</p>
+</div>
+
+</div>
+
+
+<h3>🎮 Level UP Pass</h3>
+
+<div class="product-grid">
+
+<div class="product-card" onclick="selectItem('6 Level UP Pass (120/=)', 'Level UP Pass')">
+<img src="L-3.jpg">
+<h4>6 Level</h4>
+<p>120/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('10 Level UP Pass (250/=)', 'Level UP Pass')">
+<img src="L-3.jpg">
+<h4>10 Level</h4>
+<p>250/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('15 Level UP Pass (250/=)', 'Level UP Pass')">
+<img src="L-3.jpg">
+<h4>15 Level</h4>
+<p>250/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('20 Level UP Pass (250/=)', 'Level UP Pass')">
+<img src="L-3.jpg">
+<h4>20 Level</h4>
+<p>250/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('25 Level UP Pass (250/=)', 'Level UP Pass')">
+<img src="L-3.jpg">
+<h4>25 Level</h4>
+<p>250/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('30 Level UP Pass (380/=)', 'Level UP Pass')">
+<img src="L-3.jpg">
+<h4>30 Level</h4>
+<p>380/=</p>
+</div>
+
+<div class="product-card" onclick="selectItem('All Level UP Pass (1400/=)', 'Level UP Pass')">
+<img src="L-3.jpg">
+<h4>All Level UP Pass</h4>
+<p>1400/=</p>
+</div>
+
+</div>
+
+<script>
+
+function goBack(){
+  window.location.href="home.html";
+}
+
+function selectItem(name, type){
+  const fullItem = type + " - " + name;
+  localStorage.setItem("selectedTopup", fullItem);
+  window.location.href = "OrderDetails.html";
+}
+
+</script>
+
+<div class="bottom-nav">
+
+  <a href="home.html" class="nav-item active">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+  </a>
+
+  <a href="topup.html" class="nav-item">
+    <i class="fas fa-gem"></i>
+    <span>Shop</span>
+  </a>
+
+  <a href="payment.html" class="nav-item">
+    <i class="fas fa-bolt"></i>
+    <span>Payment</span>
+  </a>
+
+  <a href="history.html" class="nav-item">
+  <i class="fas fa-clock-rotate-left"></i>
+  <span>History</span>
+</a>
+
+  <a href="profile.html" class="nav-item">
+    <i class="fas fa-user"></i>
+    <span>Profile</span>
+  </a>
+
+</div>
+
+</body>
+</html>

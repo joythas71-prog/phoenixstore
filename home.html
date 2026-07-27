@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>HOME</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="media.css">
+  <link rel="icon" href="1.jpg">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: white;
+    }
+
+    .header {
+      padding: 20px;
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      background: #020617;
+      border-bottom: 1px solid #1e293b;
+      text-shadow:
+        0 0 10px #17b8c0,
+        0 0 20px #17b8c0,
+        0 0 40px #17b8c0,
+        0 0 80px #17b8c0;
+      letter-spacing: 2px;
+      position: relative;
+    }
+
+     /* ✅ Profile icon style */
+    .profile-icon {
+      position: absolute;
+      right: 20px;
+      top: 15px;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #17b8c0;
+      cursor: pointer;
+    }
+
+    .container {
+      padding: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+.card{
+  Width: 100%;
+  Margin: 25px auto;
+  Padding: 40px 20px;
+  Border-radius: 25px;
+  Background: rgba(20,20,40,0.85);
+  Border: 1px solid #00d9ff;
+  Box-shadow:
+    0 0 15px #00d9ff,
+    0 0 40px rgba(0,217,255,0.4);
+  Text-align: center;
+  Transition: 0.3s;
+  Box-sizing: border-box;
+}
+
+
+    .card:hover {
+      transform: translateY(-5px);
+      background: #334155;
+    }
+
+    .card h2 {
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: #94a3b8;
+    }
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255,255,255,0.2);
+
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+
+.nav-item {
+  text-align: center;
+  text-decoration: none;
+  color: #aaa;
+  font-size: 12px;
+  transition: 0.3s;
+}
+
+.nav-item i {
+  display: block;
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.nav-item:hover {
+  color: #00eaff;
+}
+
+.nav-item.active {
+  color: #00eaff;
+}
+
+  </style>
+</head>
+
+<body>
+
+<div class="header">Ꭾիѻєɳıẋ ƬƠƤ ƲƤ</div>
+
+<div class="container">
+
+ <div class="card" onclick="goTopup()">
+    <h2>💎 Top-up Shop</h2>
+    <p>Buy diamonds easily</p>
+  </div>
+
+  <div class="card" onclick="goPayment()">
+    <h3>💳 Payment Methods</h3>
+    <p>View bank details & upload receipt</p>
+  </div>
+
+<div class="card" onclick="goWhatsApp()">
+    <h3>📲 WhatsApp Contact</h3>
+    <p>Chat directly for support</p>
+  </div>
+
+</div>
+
+
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyABYByDW8bAOCHfCwcRNaSN1wwifQEhzA4",
+  authDomain: "freefiretopup-bbb23.firebaseapp.com",
+  projectId: "freefiretopup-bbb23",
+  storageBucket: "freefiretopup-bbb23.firebasestorage.app",
+  messagingSenderId: "305435218774",
+  appId: "1:305435218774:web:d258e8218bd1bdec50fcf7",
+  measurementId: "G-HLNGZ236PZ"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// ✅ USER CHECK
+onAuthStateChanged(auth, (user) => {
+  const img = document.getElementById("profileImg");
+
+  if (user && user.photoURL) {
+    img.src = user.photoURL;
+  } else {
+    img.src = "pro.jpg";
+  }
+});
+
+// ✅ NAVIGATION
+window.goWhatsApp = () => window.location.href = "whatsapp.html";
+window.goPayment = () => window.location.href = "payment.html";
+window.goTopup = () => window.location.href = "topup.html";
+window.goProfile = () => window.location.href = "profile.html";
+
+</script>
+<div class="bottom-nav">
+
+  <a href="home.html" class="nav-item active">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+  </a>
+
+  <a href="topup.html" class="nav-item">
+    <i class="fas fa-gem"></i>
+    <span>Shop</span>
+  </a>
+
+  <a href="payment.html" class="nav-item">
+    <i class="fas fa-bolt"></i>
+    <span>Payment</span>
+  </a>
+
+  <a href="history.html" class="nav-item">
+  <i class="fas fa-clock-rotate-left"></i>
+  <span>History</span>
+</a>
+
+  <a href="profile.html" class="nav-item">
+    <i class="fas fa-user"></i>
+    <span>Profile</span>
+  </a>
+
+</div>
+
+</body>
+</html>
