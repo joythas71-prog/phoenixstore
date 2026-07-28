@@ -107,75 +107,106 @@
             </div>
         </div>
     </div>
-    <script type="module">
-      
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+<script type="module">
 
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  setPersistence,
-  browserLocalPersistence,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { createClient } from 
+"https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyABYByDW8bAOCHfCwcRNaSN1wwifQEhzA4",
-  authDomain: "freefiretopup-bbb23.firebaseapp.com",
-  projectId: "freefiretopup-bbb23",
-  storageBucket: "freefiretopup-bbb23.firebasestorage.app",
-  messagingSenderId: "305435218774",
-  appId: "1:305435218774:web:d258e8218bd1bdec50fcf7",
-  measurementId: "G-HLNGZ236PZ"
-};
 
-const app = initializeApp(firebaseConfig);
+const supabaseUrl =
+"https://tvhgxlqqeklrdlgbkosa.supabase.co";
 
-const auth = getAuth(app);
 
-await setPersistence(auth, browserLocalPersistence);
+const supabaseKey =
+"sb_publishable_Ep28HPF1SXIXQXBF2i__eg_h_jmjw4I";
 
-// Already logged in?
 
-onAuthStateChanged(auth, (user) => {
+const supabase =
+createClient(supabaseUrl, supabaseKey);
 
-  if (user) {
 
-    localStorage.setItem("userId", user.uid);
 
-    window.location.replace("home.html");
+/* Already logged in check */
 
-  }
+const { data: { session } } =
+await supabase.auth.getSession();
+
+
+if(session){
+
+localStorage.setItem(
+"userId",
+session.user.id
+);
+
+window.location.replace("home.html");
+
+}
+
+
+
+/* LOGIN */
+
+document
+.getElementById("loginForm")
+.addEventListener("submit", async(e)=>{
+
+e.preventDefault();
+
+
+const email =
+document.getElementById("email").value.trim();
+
+
+const password =
+document.getElementById("password").value.trim();
+
+
+
+const {data,error} =
+await supabase.auth.signInWithPassword({
+
+email: email,
+
+password: password
 
 });
 
-// ================= LOGIN =================
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
 
-  await signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
+if(error){
 
-      const user = userCredential.user;
+alert("Invalid email or password");
 
-      // Save Firebase UID
-      localStorage.setItem("userId", user.uid);
+return;
 
-      document.getElementById("successMessage").style.display = "block";
+}
 
-setTimeout(() => {
-  window.location.replace("home.html");
-}, 1500);
-    })
-    .catch((error) => {
 
-      alert(error.message);
 
-    });
+localStorage.setItem(
+"userId",
+data.user.id
+);
+
+
+
+document
+.getElementById("successMessage")
+.style.display="block";
+
+
+
+setTimeout(()=>{
+
+window.location.replace("home.html");
+
+},1500);
+
+
+
 });
+
 
 </script>
 <style>
