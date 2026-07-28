@@ -146,104 +146,88 @@ Loading...
 
 <script type="module">
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { createClient } from
+"https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-import {
-getAuth,
-onAuthStateChanged
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+const supabaseUrl =
+"https://tvhgxlqqeklrdlgbkosa.supabase.co";
 
-import {
-getFirestore,
-collection,
-getDocs
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const supabaseKey =
+"sb_publishable_Ep28HPF1SXIXQXBF2i__eg_h_jmjw4I";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyABYByDW8bAOCHfCwcRNaSN1wwifQEhzA4",
-  authDomain: "freefiretopup-bbb23.firebaseapp.com",
-  projectId: "freefiretopup-bbb23",
-  storageBucket: "freefiretopup-bbb23.firebasestorage.app",
-  messagingSenderId: "305435218774",
-  appId: "1:305435218774:web:d258e8218bd1bdec50fcf7"
-};
+const supabase =
+createClient(supabaseUrl, supabaseKey);
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const box =
+document.getElementById("historyBox");
 
-const box = document.getElementById("historyBox");
+const {
+  data: { session }
+} = await supabase.auth.getSession();
 
-onAuthStateChanged(auth, async(user)=>{
-
-if(!user){
-location.href="index.html";
-return;
+if (!session) {
+  window.location.href = "index.html";
 }
 
-const snapshot =
-await getDocs(collection(db,"orders"));
+const { data: orders, error } =
+await supabase
+.from("orders")
+.select("*")
+.eq("user_id", session.user.id)
+.order("created_at", { ascending: false });
 
 let html = "";
 
-snapshot.forEach((doc)=>{
+if (!error) {
 
-const data = doc.data();
+  orders.forEach((data) => {
 
-if(data.userId === user.uid){
+    let colorClass = "pending";
 
-let colorClass = "pending";
+    if (data.status === "success") {
+      colorClass = "success";
+    } else if (data.status === "reject") {
+      colorClass = "reject";
+    }
 
-if(data.status === "success"){
-colorClass = "success";
-}
-else if(data.status === "reject"){
-colorClass = "reject";
-}
-
-html += `
+    html += `
 <div class="card">
 
-<p>🆔 Order ID : ${doc.id}</p>
+<p>🆔 Order ID : ${data.id}</p>
 
 <p>🎮 UID : ${data.uid}</p>
 
 <p>💎 Topup : ${data.topup}</p>
 
 <p class="${colorClass}">
-📌 Status : ${data.status || "pending"}
+📌 Status : ${data.status}
 </p>
 
 </div>
 `;
 
+  });
+
 }
 
-});
+if (html === "") {
 
-if(html === ""){
-html = `
+  html = `
 <div class="card" style="text-align:center;">
-  <i class="fas fa-clock-rotate-left" 
-     style="font-size:40px;color:#38bdf8;"></i>
 
-  <h3 style="margin-top:15px;">
-    No Top-Up History Found
-  </h3>
+<i class="fas fa-clock-rotate-left"
+style="font-size:40px;color:#38bdf8;"></i>
 
-  <p style="color:#aaa;">
-    Your top-up history will appear here
-  </p>
+<h3>No Top-Up History Found</h3>
+
+<p>Your top-up history will appear here</p>
+
 </div>
 `;
+
 }
 
 box.innerHTML = html;
-
-});
 
 </script>
 

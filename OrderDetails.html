@@ -95,36 +95,42 @@
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { createClient } from
+"https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-import {
-  getFirestore,
-  collection,
-  addDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const supabaseUrl =
+"https://tvhgxlqqeklrdlgbkosa.supabase.co";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyABYByDW8bAOCHfCwcRNaSN1wwifQEhzA4",
-  authDomain: "freefiretopup-bbb23.firebaseapp.com",
-  projectId: "freefiretopup-bbb23",
-  storageBucket: "freefiretopup-bbb23.firebasestorage.app",
-  messagingSenderId: "305435218774",
-  appId: "1:305435218774:web:d258e8218bd1bdec50fcf7",
-  measurementId: "G-HLNGZ236PZ"
-};
+const supabaseKey =
+"sb_publishable_Ep28HPF1SXIXQXBF2i__eg_h_jmjw4I";
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const supabase =
+createClient(supabaseUrl, supabaseKey);
 
-async function saveOrder(uid,item){
+async function saveOrder(uid, item) {
 
-  await addDoc(collection(db,"orders"),{
+  const {
+    data: { session }
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    alert("Please login first");
+    return;
+  }
+
+const { error } = await supabase
+  .from("orders")
+  .insert({
+    user_id: session.user.id,
     uid: uid,
     topup: item,
     status: "pending",
-    userId: localStorage.getItem("userId"),
-    createdAt: Date.now()
+    created_at: new Date().toISOString()
   });
+
+  if (error) {
+    alert(error.message);
+  }
 
 }
 
