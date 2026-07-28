@@ -77,7 +77,10 @@ if(result.success){
 
 popup.style.display="flex";
 
+startOtpTimer();
+
 }
+
 else{
 
 alert(result.error);
@@ -92,6 +95,51 @@ alert(error.message);
 
 });
 
+const resendBtn =
+document.getElementById("resendOtpBtn");
+
+const timerText =
+document.getElementById("otpTimer");
+
+let timerInterval;
+
+function startOtpTimer(){
+
+  if(timerInterval){
+  clearInterval(timerInterval);
+}
+
+let time = 300; // 5 minutes
+
+resendBtn.disabled = true;
+
+timerInterval = setInterval(()=>{
+
+let minutes = Math.floor(time / 60);
+let seconds = time % 60;
+
+
+timerText.innerText =
+`Resend OTP in ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+
+
+time--;
+
+
+if(time < 0){
+
+clearInterval(timerInterval);
+
+timerText.innerText =
+"";
+
+resendBtn.disabled = false;
+
+}
+
+},1000);
+
+}
 
 verifyBtn.addEventListener("click",async()=>{
 
@@ -179,5 +227,48 @@ else{
 alert("Wrong OTP");
 
 }
+
+});
+
+resendBtn.addEventListener("click", async()=>{
+
+
+const email =
+document.getElementById("email").value.trim();
+
+
+const response =
+await fetch("/.netlify/functions/send",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+email:email
+})
+
+});
+
+
+const result =
+await response.json();
+
+
+if(result.success){
+
+alert("New OTP sent");
+
+startOtpTimer();
+
+}
+else{
+
+alert(result.error);
+
+}
+
 
 });
