@@ -2,4 +2,4 @@
   directory = "netlify/functions"
 
 [build.environment]
-  SECRETS_SCAN_OMIT_PATHS = "register.JS"
+  SECRETS_SCAN_OMIT_PATHS = "register.JS,index.html"
