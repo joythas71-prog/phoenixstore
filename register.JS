@@ -109,7 +109,7 @@ function startOtpTimer(){
   clearInterval(timerInterval);
 }
 
-let time = 300; // 5 minutes
+let time = 120; // 2 minutes
 
 resendBtn.disabled = true;
 
