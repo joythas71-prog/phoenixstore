@@ -1,171 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>PHOENIX TK</title>
 <link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="register.CSS">
 <link rel="icon" href="1.jpg">
+
 </head>
 
 <body>
 
 <div class="login-container">
-  <div class="login-card">
 
-    <div class="login-header">
-      <h2>Create Account</h2>
-      <p>Sign up to continue</p>
-    </div>
+<div class="login-card">
 
-    <form id="registerForm" class="login-form">
+<div class="login-header">
+<h2>Create Account</h2>
+<p>Sign up to continue</p>
+</div>
+
+<form id="registerForm" class="login-form">
+
+<div class="form-group">
+<div class="input-group neu-input">
+
+<input type="text" id="username" required placeholder=" ">
+<label>Username</label>
+
+</div>
+</div>
+
+<div class="form-group">
+<div class="input-group neu-input">
+
+<input type="email" id="email" required placeholder=" ">
+<label>Email address</label>
+
+</div>
+</div>
+
+<div class="form-group">
+<div class="input-group neu-input">
+
+<input type="password" id="password" required placeholder=" ">
+<label>Password</label>
+
+</div>
+</div>
+
+<button type="submit" class="neu-button login-btn">
+Create Account
+</button>
 
 
-           <div class="form-group">
-            <div class="input-group neu-input">
-               <input type="text" id="username" required placeholder=" ">
-            <label>Username</label>
-            </div>
-           </div>
+<p id="successMsg" class="success-msg" style="display:none;color:red;">
+Account Created Successfully ✅
+</p>
 
-      <div class="form-group">
-        <div class="input-group neu-input">
-          <input type="email" id="email" required placeholder=" ">
-          <label>Email address</label>
-        </div>
-      </div>
 
-      <div class="form-group">
-        <div class="input-group neu-input">
-          <input type="password" id="password" required placeholder=" ">
-          <label>Password</label>
-        </div>
-      </div>
+</form>
 
-      <button type="submit" class="neu-button login-btn">
-        Create Account
-      </button>
+<div class="signup-link">
+<p>
+Already have an account?
+<a href="index.html">Login</a>
+</p>
+</div>
 
-      <!-- ✅ FIXED success message -->
-      <p id="successMsg" class="success-msg" style="display:none; color:rgb(255, 0, 0);">
-        Account Created Successfully ✅
-      </p>
+</div>
 
-    </form>
-
-    <div class="signup-link">
-      <p>Already have an account? <a href="index.html">Login</a></p>
-    </div>
-
-  </div>
 </div>
 
 
-<style>
-/* TABLET */
-@media (max-width: 1024px) {
-  .card {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
+<!-- OTP POPUP -->
 
-/* MOBILE */
-@media (max-width: 768px) {
-  .card {
-    grid-template-columns: 1fr;
-  }
+<div id="otpPopup" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+align-items:center;
+justify-content:center;
+">
 
-  h1 {
-    font-size: 24px;
-  }
-}
+<div style="
+background:white;
+padding:25px;
+border-radius:15px;
+text-align:center;
+width:300px;
+">
 
-/* SMALL MOBILE */
-@media (max-width: 480px) {
-  h1 {
-    font-size: 20px;
-  }
+<h3>Enter your OTP</h3>
 
-  p {
-    font-size: 14px;
-  }
-}
+<p>Check your mailbox</p>
 
-/* Desktop */
-.container{
-  width: 80%;
-  margin: auto;
-}
-</style>
+<input 
+type="text" 
+id="otpInput"
+maxlength="6"
+placeholder="6 Digit OTP"
+style="
+width:90%;
+padding:12px;
+font-size:18px;
+text-align:center;
+"
+>
 
-<script type="module">
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+<br><br>
 
-// Supabase details
-const supabaseUrl = "https://tvhgxlqqeklrdlgbkosa.supabase.co";
-const supabaseKey = "sb_publishable_Ep28HPF1SXIXQXBF2i__eg_h_jmjw4I";
+<button id="verifyOtpBtn" class="neu-button">
+Verify OTP
+</button>
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+</div>
 
+</div>
 
-const form = document.getElementById("registerForm");
-const msg = document.getElementById("successMsg");
-
-
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const username = document.getElementById("username").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-
-  if (password.length < 6) {
-    alert("Password must be at least 6 characters");
-    return;
-  }
-
-
-  try {
-
-    // Create account
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password
-    });
-
-
-    if (error) throw error;
-
-
-    // Save profile
-const { error: profileError } = await supabase
-  .from("profiles")
-  .insert({
-    id: data.user.id,
-    username: username,
-    email: email
-  });
-
-if (profileError) {
-  throw profileError;
-}
-
-
-    msg.style.display = "block";
-
-
-    setTimeout(() => {
-      window.location.href = "index.html";
-    }, 2000);
-
-
-  } catch (error) {
-    alert(error.message);
-  }
-
-});
-</script>
+<script type="module" src="register.js"></script>
 
 </body>
 
