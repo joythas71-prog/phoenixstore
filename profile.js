@@ -1,147 +1,80 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { createClient } from
+"https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+const supabaseUrl =
+"https://tvhgxlqqeklrdlgbkosa.supabase.co";
 
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const supabaseKey =
+"sb_publishable_Ep28HPF1SXIXQXBF2i__eg_h_jmjw4I";
 
-
-// ================= FIREBASE CONFIG =================
-
-const firebaseConfig = {
-  apiKey: "AIzaSyABYByDW8bAOCHfCwcRNaSN1wwifQEhzA4",
-  authDomain: "freefiretopup-bbb23.firebaseapp.com",
-  projectId: "freefiretopup-bbb23",
-  storageBucket: "freefiretopup-bbb23.firebasestorage.app",
-  messagingSenderId: "305435218774",
-  appId: "1:305435218774:web:d258e8218bd1bdec50fcf7"
-};
-
-
-// ================= INIT =================
-
-const app = initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
-
-const db = getFirestore(app);
-
+const supabase =
+createClient(supabaseUrl, supabaseKey);
 
 // ================= CURRENT USER =================
 
 let currentUser = null;
 
-
 // ================= LOAD PROFILE =================
 
-onAuthStateChanged(auth, async (user) => {
+const { data: { session } } =
+await supabase.auth.getSession();
 
-  if (!user) {
+if (!session) {
+  window.location.href = "index.html";
+}
 
-    window.location.href = "index.html";
+currentUser = session.user;
 
-    return;
+const { data, error } =
+await supabase
+.from("profiles")
+.select("*")
+.eq("id", currentUser.id)
+.single();
 
+if (!error && data) {
+  document.getElementById("username").value =
+    data.username || "";
+
+  document.getElementById("email").value =
+    data.email || currentUser.email;
+
+  if (data.avatar_url) {
+    document.getElementById("profilePic").src =
+      data.avatar_url;
   }
-
-  currentUser = user;
-
-  console.log("Logged in User UID:", user.uid);
-
-  try {
-
-    const userRef = doc(db, "users", user.uid);
-
-    const userSnap = await getDoc(userRef);
-
-
-    if (userSnap.exists()) {
-
-      const data = userSnap.data();
-
-
-      // Username
-
-      if (data.name) {
-
-        document.getElementById("username").value = data.name;
-
-      }
-
-
-      // Email
-
-      document.getElementById("email").value = data.email || user.email;
-
-
-      // Profile Image
-
-      if (data.img) {
-
-        document.getElementById("profilePic").src = data.img;
-
-      }
-
-    } else {
-
-      // If Firestore data not found
-
-      document.getElementById("email").value = user.email;
-
-    }
-
-
-  } catch (error) {
-
-    console.error("Profile load error:", error);
-
-  }
-
-});
-
+} else {
+  document.getElementById("email").value =
+    currentUser.email;
+}
 
 // ================= UPLOAD BUTTON =================
 
-window.uploadImg = function() {
-
+window.uploadImg = function () {
   document.getElementById("upload").click();
-
 };
-
 
 // ================= CLOUDINARY IMAGE UPLOAD =================
 
 window.profileImageURL = "";
 
-document.getElementById("upload").addEventListener("change", async function() {
+document.getElementById("upload").addEventListener("change", async function () {
 
   const file = this.files[0];
-
   if (!file) return;
 
   const btn = document.getElementById("uploadBtn");
 
-btn.innerText = "Uploading... ⏳";
-btn.disabled = true;
+  btn.innerText = "Uploading... ⏳";
+  btn.disabled = true;
 
-
-  let formData = new FormData();
-
+  const formData = new FormData();
   formData.append("file", file);
   formData.append("upload_preset", "Phoenixstore_upload");
 
-
   try {
 
-    let response = await fetch(
+    const response = await fetch(
       "https://api.cloudinary.com/v1_1/lhv0ojre/image/upload",
       {
         method: "POST",
@@ -149,126 +82,70 @@ btn.disabled = true;
       }
     );
 
+    const data = await response.json();
 
-let data = await response.json();
+    if (data.secure_url) {
 
-if(data.secure_url){
+      document.getElementById("profilePic").src = data.secure_url;
 
-  document.getElementById("profilePic").src = data.secure_url;
+      window.profileImageURL = data.secure_url;
 
-  window.profileImageURL = data.secure_url;
+      btn.innerText = "Change Photo";
+      btn.disabled = false;
 
-   btn.innerText = "Change Photo";
-   btn.disabled = false;
+      showToast("Photo Upload Success ✅");
 
-showToast("Photo Upload Success ✅");
+    } else {
 
-}else{
+      alert("Cloudinary upload failed ❌");
+      btn.innerText = "Change Photo";
+      btn.disabled = false;
 
-  alert("Cloudinary upload failed ❌");
+    }
 
-}
-
-
-  } catch(error) {
+  } catch (error) {
 
     console.error(error);
 
     alert("Photo Upload Failed ❌");
 
+    btn.innerText = "Change Photo";
+    btn.disabled = false;
+
   }
 
 });
 
-
-
-
-// ================= SAVE PROFILE =================
-
-window.saveProfile = async function() {
-
-  if (!currentUser) {
-
-    alert("Please login first");
-
-    return;
-
-  }
-
+window.saveProfile = async function () {
 
   const name = document.getElementById("username").value.trim();
 
-  const email = document.getElementById("email").value.trim();
+  const img =
+    window.profileImageURL ||
+    document.getElementById("profilePic").src;
 
-  const img = window.profileImageURL || document.getElementById("profilePic").src;
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      username: name,
+      avatar_url: img
+    })
+    .eq("id", currentUser.id);
 
-
-  if (!name) {
-
-    alert("Please enter username");
-
+  if (error) {
+    alert(error.message);
     return;
-
   }
 
-showToast("Uploading... Please wait ⏳");
+  showToast("Profile Saved Successfully ✅");
 
-  try {
-
-    const userRef = doc(db, "users", currentUser.uid);
-
-
-    await setDoc(userRef, {
-
-      name: name,
-
-      email: email,
-
-      img: img
-
-    }, { merge: true });
-
-
-   showToast("Profile Saved Successfully ✅");
-
-
+  setTimeout(() => {
     window.location.href = "home.html";
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    alert("Profile save failed: " + error.message);
-
-  }
+  }, 1000);
 
 };
 
-// ================= LOGOUT =================
-
-window.logoutUser = async function() {
-
-  try {
-
-    await signOut(auth);
-
-    localStorage.removeItem("userId");
-    localStorage.removeItem("currentUser");
-
-    window.location.href = "index.html";
-
-  } catch (error) {
-
-    console.error(error);
-
-    alert("Logout failed: " + error.message);
-
-  }
-
-};
-
-window.showToast = function(message){
+window.showToast = function (message) {
 
   const toast = document.getElementById("toast");
 
@@ -276,11 +153,19 @@ window.showToast = function(message){
 
   toast.classList.add("show");
 
-
-  setTimeout(()=>{
-
+  setTimeout(() => {
     toast.classList.remove("show");
+  }, 3000);
 
-  },3000);
+};
 
-}
+window.logoutUser = async function () {
+
+  await supabase.auth.signOut();
+
+  localStorage.removeItem("userId");
+
+  window.location.href = "index.html";
+
+};
+
