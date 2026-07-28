@@ -37,6 +37,22 @@ if(password.length < 6){
 
 try {
 
+const checkResponse = await fetch("/.netlify/functions/check-user", {
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+email:email
+})
+});
+const checkResult = await checkResponse.json();
+if(checkResult.exists){
+alert("Email already used. Please login.");
+return;
+}
+
 const response =
 await fetch("/.netlify/functions/send",{
 
