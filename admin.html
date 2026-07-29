@@ -274,37 +274,34 @@ to{transform:scale(1.08);}
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  doc,
-  updateDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { createClient } from
+"https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyABYByDW8bAOCHfCwcRNaSN1wwifQEhzA4",
-  authDomain: "freefiretopup-bbb23.firebaseapp.com",
-  projectId: "freefiretopup-bbb23"
-};
+const supabaseUrl =
+"https://tvhgxlqqeklrdlgbkosa.supabase.co";
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const supabaseKey =
+"sb_publishable_Ep28HPF1SXIXQXBF2i__eg_h_jmjw4I";
+
+const supabase =
+createClient(supabaseUrl, supabaseKey);
+
 
 // 🔒 Protect admin page
-if (localStorage.getItem("admin") !== "true") {
-  window.location.href = "index.html";
-}
+await supabase
+  .from("orders")
+  .update({ status: status })
+  .eq("id", id);
 
 // Logout
-window.logout = function () {
-  signOut(auth).then(() => {
-    localStorage.removeItem("admin");
-    window.location.href = "index.html";
-  });
+window.logout = async function () {
+
+  await supabase.auth.signOut();
+
+  localStorage.removeItem("admin");
+
+  window.location.href = "index.html";
+
 };
 
 const box = document.getElementById("contentBox");
@@ -312,27 +309,42 @@ const box = document.getElementById("contentBox");
 // Dashboard
 window.showDashboard = async function () {
 
-  const usersSnap = await getDocs(collection(db, "users"));
-  const ordersSnap = await getDocs(collection(db, "orders"));
+  const { count: totalUsers } =
+  await supabase
+    .from("profiles")
+    .select("*", { count: "exact", head: true });
 
-  let totalUsers = usersSnap.size;
-  let totalOrders = ordersSnap.size;
+  const { data: orders } =
+  await supabase
+    .from("orders")
+    .select("*");
+
+  const totalOrders = orders.length;
 
   let success = 0;
   let rejected = 0;
   let pending = 0;
 
-  ordersSnap.forEach((doc) => {
-    const data = doc.data();
+  orders.forEach((order) => {
 
-    if(data.status === "success") success++;
-   else if(data.status === "reject") rejected++;
-    else pending++;
+    if (order.status === "success") {
+      success++;
+    } else if (order.status === "reject") {
+      rejected++;
+    } else {
+      pending++;
+    }
+
   });
 
-  let successPer = totalOrders ? ((success / totalOrders) * 100).toFixed(0) : 0;
-  let rejectPer = totalOrders ? ((rejected / totalOrders) * 100).toFixed(0) : 0;
-  let pendingPer = totalOrders ? ((pending / totalOrders) * 100).toFixed(0) : 0;
+  let successPer =
+    totalOrders ? ((success / totalOrders) * 100).toFixed(0) : 0;
+
+  let rejectPer =
+    totalOrders ? ((rejected / totalOrders) * 100).toFixed(0) : 0;
+
+  let pendingPer =
+    totalOrders ? ((pending / totalOrders) * 100).toFixed(0) : 0;
 
   box.innerHTML = `
   <h2>📊 Dashboard Analytics</h2><br>
@@ -340,7 +352,7 @@ window.showDashboard = async function () {
   <div class="cards">
     <div class="card">
       <h3>👤 Users</h3>
-      <p>${totalUsers}</p>
+      <p>${totalUsers || 0}</p>
     </div>
 
     <div class="card">
@@ -364,40 +376,65 @@ window.showDashboard = async function () {
     </div>
   </div>
   `;
-}
+
+};
 
 // 🔥 Users (Firestore)
 window.viewUsers = async function () {
 
-  const snapshot = await getDocs(collection(db, "users"));
+  const { data: users, error } =
+  await supabase
+    .from("profiles")
+    .select("*")
+    .order("created_at", { ascending: false });
 
   let html = "<h2>👤 Users List</h2><br>";
 
-  snapshot.forEach((doc) => {
-    let data = doc.data();
+  if (error) {
+    box.innerHTML = "<h2>Failed to load users ❌</h2>";
+    return;
+  }
+
+  users.forEach((user) => {
 
     html += `
-      <p>
-        👤 ${data.name} <br>
-        📧 ${data.email}
-      </p>
-      <hr>
+    <div style="
+      background:#0f172a;
+      padding:15px;
+      margin-bottom:10px;
+      border-radius:10px;
+    ">
+
+      <p>👤 ${user.username || "No Username"}</p>
+
+      <p>📧 ${user.email}</p>
+
+      <p>🆔 ${user.id}</p>
+
+    </div>
     `;
+
   });
 
   box.innerHTML = html;
+
 };
 
 // Other buttons
 window.viewTopups = async function () {
 
-  const snapshot = await getDocs(collection(db, "orders"));
+  const { data: orders, error } = await supabase
+    .from("orders")
+    .select("*");
 
   let html = "<h2>💰 Successful Topups</h2><br>";
 
-  snapshot.forEach((doc) => {
+  if (error) {
+    box.innerHTML = "<h2>Failed to load orders ❌</h2>";
+    return;
+  }
 
-    let data = doc.data();
+  orders.forEach((data) => {
 
     if (data.status === "success") {
 
@@ -411,18 +448,30 @@ window.viewTopups = async function () {
         <p>🎮 UID : ${data.uid}</p>
         <p>💎 Topup : ${data.topup}</p>
         <p style="color:lime;">✅ Status : success</p>
-        <p>👤 User ID : ${data.userId}</p>
+        <p>👤 User ID : ${data.user_id}</p>
       </div>
       `;
+
     }
+
   });
 
   box.innerHTML = html;
+
 };
 
 window.viewOrders = async function () {
 
-  const snapshot = await getDocs(collection(db, "orders"));
+  const { data: orders, error } =
+await supabase
+.from("orders")
+.select("*")
+.order("created_at", { ascending: false });
+
+if (error) {
+  box.innerHTML = "<h2>Failed to load orders ❌</h2>";
+  return;
+}
 
 let html = `
 <h2>📦 Orders List</h2><br>
@@ -440,13 +489,11 @@ border-radius:10px;
 ">
 `;
 
-  if (snapshot.empty) {
-    html += "<p>No Orders Found</p>";
-  }
+if (orders.length === 0) {
+  html += "<p>No Orders Found</p>";
+}
 
-  snapshot.forEach((doc) => {
-
-    let data = doc.data();
+orders.forEach((data) => {
 
     html += `
     <div style="
@@ -457,11 +504,8 @@ border-radius:10px;
     ">
 
       <p>🎮 UID : ${data.uid}</p>
-
       <p>💎 Topup : ${data.topup}</p>
-
- <p>👤 User ID : ${data.userId}</p>
- <p>
+      <p>👤 User ID : ${data.user_id}</p>
 📌 Status :
 <span style="
 color:${
@@ -477,15 +521,15 @@ ${data.status || 'pending'}
 
 <br>
 
-<button onclick="setStatus('${doc.id}','pending')">
+<button onclick="setStatus('${data.id}','pending')">
 🟡 Pending
 </button>
 
-<button onclick="setStatus('${doc.id}','success')">
+<button onclick="setStatus('${data.id}','success')">
 ✅ Success
 </button>
 
-<button onclick="setStatus('${doc.id}','reject')">
+<button onclick="setStatus('${data.id}','reject')">
 ❌ Reject
 </button>
 
@@ -499,80 +543,85 @@ ${data.status || 'pending'}
 // 🔥 Load counts
 async function loadCounts() {
 
-  const usersSnap =
-  await getDocs(collection(db, "users"));
+  const { count: usersCount } =
+  await supabase
+    .from("profiles")
+    .select("*", { count: "exact", head: true });
 
   document.getElementById("usersCount").innerText =
-  usersSnap.size;
+    usersCount || 0;
 
-  const ordersSnap =
-  await getDocs(collection(db, "orders"));
+  const { data: orders } =
+  await supabase
+    .from("orders")
+    .select("*");
 
   document.getElementById("ordersCount").innerText =
-  ordersSnap.size;
+    orders.length;
 
-let successCount = 0;
+  let successCount = 0;
 
-ordersSnap.forEach((doc) => {
+  orders.forEach((order) => {
 
-  const data = doc.data();
+    if (order.status === "success") {
+      successCount++;
+    }
 
-  if (data.status === "success") {
-    successCount++;
-  }
+  });
 
-});
+  document.getElementById("topupCount").innerText =
+    successCount;
 
-document.getElementById("topupCount").innerText =
-successCount;
-
-document.getElementById("loadingIcon").style.display = "none";
-
+  document.getElementById("loadingIcon").style.display =
+    "none";
 
 }
 
 loadCounts();
 showDashboard();
 
-window.setStatus = async function(id,status){
+window.setStatus = async function(id, status) {
 
-  await updateDoc(
-    doc(db,"orders",id),
-    {
-      status: status
-    }
-  );
+  const { error } = await supabase
+    .from("orders")
+    .update({ status: status })
+    .eq("id", id);
 
-const msg = document.createElement("div");
+  if (error) {
+    alert("Failed to update status!");
+    console.error(error);
+    return;
+  }
 
-msg.innerText = "Status Updated ✅";
+  const msg = document.createElement("div");
 
-msg.style.position = "fixed";
-msg.style.top = "20px";
-msg.style.right = "20px";
-msg.style.background = "green";
-msg.style.color = "white";
-msg.style.padding = "10px";
-msg.style.borderRadius = "8px";
+  msg.innerText = "Status Updated ✅";
+  msg.style.position = "fixed";
+  msg.style.top = "20px";
+  msg.style.right = "20px";
+  msg.style.background = "green";
+  msg.style.color = "white";
+  msg.style.padding = "10px";
+  msg.style.borderRadius = "8px";
 
-document.body.appendChild(msg);
+  document.body.appendChild(msg);
 
-setTimeout(() => {
-  msg.remove();
-}, 2000);
+  setTimeout(() => {
+    msg.remove();
+  }, 2000);
 
   viewOrders();
-}
+};
 
 window.viewRejected = async function () {
 
-  const snapshot = await getDocs(collection(db, "orders"));
+  const { data: orders, error } = await supabase
+  .from("orders")
+  .select("*");
 
   let html = "<h2>❌ Rejected Orders</h2><br>";
 
-  snapshot.forEach((doc) => {
-
-    let data = doc.data();
+orders.forEach((data) => {
 
     if (data.status === "reject") {
 
@@ -586,7 +635,7 @@ window.viewRejected = async function () {
         <p>🎮 UID : ${data.uid}</p>
         <p>💎 Topup : ${data.topup}</p>
         <p style="color:red;">❌ Status : reject</p>
-        <p>👤 User ID : ${data.userId}</p>
+        <p>👤 User ID : ${data.user_id}</p>
       </div>
       `;
     }
@@ -598,13 +647,13 @@ window.viewRejected = async function () {
 
 window.viewPending = async function () {
 
-  const snapshot = await getDocs(collection(db, "orders"));
+const { data: orders, error } = await supabase
+.from("orders")
+.select("*");
 
   let html = "<h2>⏳ Pending Orders</h2><br>";
 
-  snapshot.forEach((doc) => {
-
-    let data = doc.data();
+orders.forEach((data) => {
 
     if (
       data.status === "pending" ||
@@ -621,7 +670,7 @@ window.viewPending = async function () {
         <p>🎮 UID : ${data.uid}</p>
         <p>💎 Topup : ${data.topup}</p>
         <p style="color:orange;">⏳ Status : pending</p>
-        <p>👤 User ID : ${data.userId}</p>
+        <p>👤 User ID : ${data.user_id}</p>
       </div>
       `;
     }
@@ -633,47 +682,51 @@ window.viewPending = async function () {
 
 window.searchOrder = async function () {
 
-const search =
-document.getElementById("searchUser")
-.value
-.toLowerCase();
+  const search =
+    document.getElementById("searchUser")
+    .value
+    .toLowerCase();
 
-const snapshot =
-await getDocs(collection(db,"orders"));
+  const { data: orders, error } = await supabase
+    .from("orders")
+    .select("*");
 
-let html = `
-<h2>📦 Search Results</h2><br>
-`;
+  if (error) {
+    box.innerHTML = "<h2>Failed to search ❌</h2>";
+    return;
+  }
 
-snapshot.forEach((doc)=>{
+  let html = `
+  <h2>📦 Search Results</h2><br>
+  `;
 
-const data = doc.data();
+  orders.forEach((data) => {
 
-if(
-data.userId &&
-data.userId.toLowerCase().includes(search)
-){
+    if (
+      data.user_id &&
+      data.user_id.toLowerCase().includes(search)
+    ) {
 
-html += `
-<div style="
-background:#0f172a;
-padding:15px;
-margin-bottom:10px;
-border-radius:10px;
-">
-<p>🎮 UID : ${data.uid}</p>
-<p>💎 Topup : ${data.topup}</p>
-<p>👤 User ID : ${data.userId}</p>
-<p>📌 Status : ${data.status}</p>
-</div>
-`;
-}
+      html += `
+      <div style="
+      background:#0f172a;
+      padding:15px;
+      margin-bottom:10px;
+      border-radius:10px;
+      ">
+        <p>🎮 UID : ${data.uid}</p>
+        <p>💎 Topup : ${data.topup}</p>
+        <p>👤 User ID : ${data.user_id}</p>
+        <p>📌 Status : ${data.status}</p>
+      </div>
+      `;
+    }
 
-});
+  });
 
-box.innerHTML = html;
+  box.innerHTML = html;
 
-}
+};
 
 </script>
 

@@ -96,63 +96,69 @@ to{transform:scale(1.08);}
 
   <!-- Firebase + Login Script -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { createClient } from
+"https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyABYByDW8bAOCHfCwcRNaSN1wwifQEhzA4",
-      authDomain: "freefiretopup-bbb23.firebaseapp.com",
-      projectId: "freefiretopup-bbb23",
-      storageBucket: "freefiretopup-bbb23.firebasestorage.app",
-      messagingSenderId: "305435218774",
-      appId: "1:305435218774:web:d258e8218bd1bdec50fcf7",
-      measurementId: "G-HLNGZ236PZ"
-    };
+const supabase = createClient(
+  "https://tvhgxlqqeklrdlgbkosa.supabase.co",
+  "sb_publishable_Ep28HPF1SXIXQXBF2i__eg_h_jmjw4I"
+);
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    const ADMIN_EMAILS = [
+const ADMIN_EMAILS = [
   "joythas13@gmail.com",
   "praveenammu837@gmail.com",
   "ssrianjeevan@gmail.com",
   "javikshanjavi07@gmail.com"
 ];
 
-    window.login = function () {
-      let email = document.getElementById("email").value;
-      let password = document.getElementById("password").value;
+window.login = async function () {
 
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
+  const email =
+    document.getElementById("email").value;
 
-          if (ADMIN_EMAILS.includes(email)) {
-            localStorage.setItem("admin", "true");
-            window.location.href = "admin.html";
-          } else {
-           Swal.fire({
-  icon: "error",
-  title: "Access Denied",
-  text: "You are not authorized to access the Admin Panel.",
-  confirmButtonText: "OK"
-});
-          }
+  const password =
+    document.getElementById("password").value;
 
-        })
-.catch((error) => {
+  const { data, error } =
+    await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
 
-Swal.fire({
-  icon: "error",
-  title: "Login Failed",
-  text: "Invalid Email or Password",
-  confirmButtonText: "OK",
-  background: "#1e293b",
-  color: "#fff",
-  confirmButtonColor: "#38bdf8"
-});
+  if (error) {
 
-});
-    };
+    Swal.fire({
+      icon: "error",
+      title: "Login Failed",
+      text: "Invalid Email or Password",
+      confirmButtonText: "OK",
+      background: "#1e293b",
+      color: "#fff",
+      confirmButtonColor: "#38bdf8"
+    });
+
+    return;
+  }
+
+  if (ADMIN_EMAILS.includes(email)) {
+
+    localStorage.setItem("admin", "true");
+    window.location.href = "admin.html";
+
+  } else {
+
+    await supabase.auth.signOut();
+
+    Swal.fire({
+      icon: "error",
+      title: "Access Denied",
+      text: "You are not authorized to access the Admin Panel.",
+      confirmButtonText: "OK"
+    });
+
+  }
+
+};
   </script>
 
 </body>
