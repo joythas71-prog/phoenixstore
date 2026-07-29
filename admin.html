@@ -286,6 +286,10 @@ const supabaseKey =
 const supabase =
 createClient(supabaseUrl, supabaseKey);
 
+const { data, error } = await supabase.auth.getSession();
+
+console.log(data.session);
+
 
 // 🔒 Protect admin page
 if (localStorage.getItem("admin") !== "true") {
