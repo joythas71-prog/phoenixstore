@@ -589,10 +589,14 @@ window.setStatus = async function(id, status) {
 
      console.log("SESSION:", sessionData.session);
 
-  const { error } = await supabase
-    .from("orders")
-    .update({ status: status })
-    .eq("id", id);
+const { data, error } = await supabase
+  .from("orders")
+  .update({ status: status })
+  .eq("id", id)
+  .select();
+
+console.log("UPDATE DATA:", data);
+console.log("UPDATE ERROR:", error);
 
   if (error) {
     alert("Failed to update status!");
