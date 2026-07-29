@@ -107,7 +107,7 @@ const supabaseKey =
 const supabase =
 createClient(supabaseUrl, supabaseKey);
 
-async function saveOrder(uid, item) {
+async function saveOrder(uid, item, receipt_url) {
 
   const {
     data: { session }
@@ -125,6 +125,7 @@ const { error } = await supabase
     uid: uid,
     topup: item,
     status: "pending",
+    receipt_url: receipt_url,
     created_at: new Date().toISOString()
   });
 
@@ -285,70 +286,69 @@ window.submitOrder = async function(){
 
 
 
- // TELEGRAM DATA
+ try{
 
- const formData =
- new FormData();
+  // UPLOAD RECEIPT TO SUPABASE STORAGE
 
- formData.append(
-  "chat_id",
-  "7090493537"
- );
+const fileName =
+Date.now() + "_" + file.name;
 
- formData.append(
-  "photo",
-  file
- );
 
- formData.append(
-  "caption",
+const { error: uploadError } =
+await supabase.storage
+.from("uploads")
+.upload(fileName, file);
 
+
+if(uploadError){
+
+ msg.innerText =
+ "Upload Failed ⚠";
+
+ return;
+
+}
+
+
+// GET RECEIPT URL
+
+const { data: urlData } =
+supabase.storage
+.from("uploads")
+.getPublicUrl(fileName);
+
+
+const receipt_url =
+urlData.publicUrl;
+
+console.log(receipt_url);
+
+// SEND TO DISCORD WEBHOOK
+
+const discordMessage = new FormData();
+
+discordMessage.append(
+  "content",
 `🎮 New Order
 
 UID: ${uid}
 
-Top Up: ${item}`
+Top Up: ${item}
 
- );
-
-
-
- try{
+Receipt:
+${receipt_url}`
+);
 
 
-  // SEND PHOTO TO TELEGRAM FIRST
-
-  const response =
-  await fetch(
-
-  "https://api.telegram.org/bot8960233712:AAFe7KEsj2BLb4AjwIiy5KQEdlke8CFmeLw/sendPhoto",
-
+await fetch(
+  "https://discord.com/api/webhooks/1531970544776511540/j0ufnoAuGXDCgyHkwnE_MbgYZZcO-CtYwn4tgY2Ec4nTn-qw0cbkgGYgNVNHvjN9PPjy",
   {
-
-   method:"POST",
-
-   body: formData
-
+    method:"POST",
+    body: discordMessage
   }
+);
 
-  );
-
-
-  const result =
-  await response.json();
-
-
-
-  // SUCCESS CHECK
-
-  if(result.ok){
-
-await saveOrder(uid,item);
-
-   msg.innerText =
-   "Sent To Admin ✅";
-
-
+await saveOrder(uid,item,receipt_url);
 
    // WHATSAPP MESSAGE
 
@@ -378,15 +378,10 @@ Payment Done.`;
 
    setTimeout(()=>{
 
-    window.location.href =
-    url;
+ window.location.href =
+ url;
 
-   },1000);
-
-  }else{
-   msg.innerText =
-   "Telegram Send Failed ⚠";
-  }
+},1000);
 
  }catch(error){
   msg.innerText =
