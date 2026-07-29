@@ -288,10 +288,9 @@ createClient(supabaseUrl, supabaseKey);
 
 
 // 🔒 Protect admin page
-await supabase
-  .from("orders")
-  .update({ status: status })
-  .eq("id", id);
+if (localStorage.getItem("admin") !== "true") {
+  window.location.href = "index.html";
+}
 
 // Logout
 window.logout = async function () {
