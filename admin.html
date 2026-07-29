@@ -585,6 +585,10 @@ showDashboard();
 
 window.setStatus = async function(id, status) {
 
+     const { data: sessionData } = await supabase.auth.getSession();
+
+     console.log("SESSION:", sessionData.session);
+
   const { error } = await supabase
     .from("orders")
     .update({ status: status })
