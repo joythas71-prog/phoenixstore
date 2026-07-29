@@ -322,6 +322,8 @@ window.showDashboard = async function () {
     .from("orders")
     .select("*");
 
+    console.log("ORDERS:", orders);
+
   const totalOrders = orders.length;
 
   let success = 0;
