@@ -120,9 +120,12 @@ window.saveProfile = async function () {
 
   const name = document.getElementById("username").value.trim();
 
-  const img =
-    window.profileImageURL ||
-    document.getElementById("profilePic").src;
+const img = window.profileImageURL;
+
+if (!img) {
+  alert("Please upload a profile photo first ❌");
+  return;
+}
 
   const { error } = await supabase
     .from("profiles")

@@ -58,7 +58,7 @@ if (error) {
     });
 
 await transporter.sendMail({
-  from: `"Phoenix Store Security" <${process.env.EMAIL_USER}>`,
+  from: `"Phoenix Store" <${process.env.EMAIL_USER}>`,
   to: email,
   subject: "Your One-Time Password (OTP)",
   html: `
