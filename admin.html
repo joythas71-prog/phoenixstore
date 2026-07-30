@@ -473,6 +473,9 @@ await supabase
 .select("*")
 .order("created_at", { ascending: false });
 
+console.log("ORDERS:", orders);
+console.log("ERROR:", error);
+
 if (error) {
   box.innerHTML = "<h2>Failed to load orders ❌</h2>";
   return;
