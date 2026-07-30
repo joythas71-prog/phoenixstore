@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>HOME</title>
-
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="media.css">
   <link rel="icon" href="1.jpg">
@@ -126,7 +125,12 @@
 
 <body>
 
-<div class="header">Ꭾիѻєɳıẋ ƬƠƤ ƲƤ</div>
+<div class="header">
+  Ꭾիѻєɳıẋ ƬƠƤ ƲƤ
+
+  <img id="profileImg" class="profile-icon" src="pro.jpg" onclick="goProfile()">
+
+</div>
 
 <div class="container">
 
@@ -151,32 +155,32 @@
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { createClient } from
+"https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyABYByDW8bAOCHfCwcRNaSN1wwifQEhzA4",
-  authDomain: "freefiretopup-bbb23.firebaseapp.com",
-  projectId: "freefiretopup-bbb23",
-  storageBucket: "freefiretopup-bbb23.firebasestorage.app",
-  messagingSenderId: "305435218774",
-  appId: "1:305435218774:web:d258e8218bd1bdec50fcf7",
-  measurementId: "G-HLNGZ236PZ"
-};
+const supabase = createClient(
+"https://tvhgxlqqeklrdlgbkosa.supabase.co",
+"sb_publishable_Ep28HPF1SXIXQXBF2i__eg_h_jmjw4I"
+);
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const { data:{ session } } =
+await supabase.auth.getSession();
 
-// ✅ USER CHECK
-onAuthStateChanged(auth, (user) => {
-  const img = document.getElementById("profileImg");
+if(session){
 
-  if (user && user.photoURL) {
-    img.src = user.photoURL;
-  } else {
-    img.src = "pro.jpg";
-  }
-});
+const { data } = await supabase
+.from("profiles")
+.select("avatar_url")
+.eq("id", session.user.id)
+.single();
+
+const img = document.getElementById("profileImg");
+
+if(img){
+  img.src = data?.avatar_url || "pro.jpg";
+}
+
+}
 
 // ✅ NAVIGATION
 window.goWhatsApp = () => window.location.href = "whatsapp.html";
