@@ -140,3 +140,9 @@ window.verifyOTP = async function () {
   }
 
 };
+
+window.updatePassword = async function () {
+
+  alert("updatePassword() called");
+
+};
