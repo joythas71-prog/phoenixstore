@@ -143,6 +143,56 @@ window.verifyOTP = async function () {
 
 window.updatePassword = async function () {
 
-  alert("updatePassword() called");
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("newPassword").value;
+  const confirm = document.getElementById("confirmPassword").value;
+
+  if (!password || !confirm) {
+    msg.style.color = "red";
+    msg.innerText = "❌ Fill all fields.";
+    return;
+  }
+
+  if (password !== confirm) {
+    msg.style.color = "red";
+    msg.innerText = "❌ Passwords do not match.";
+    return;
+  }
+
+  try {
+
+    const res = await fetch("/.netlify/functions/update-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        password
+      })
+    });
+
+    const result = await res.json();
+
+    if (!result.success) {
+      msg.style.color = "red";
+      msg.innerText = "❌ " + result.error;
+      return;
+    }
+
+    msg.style.color = "lime";
+    msg.innerText = "✅ Password updated successfully.";
+
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 2000);
+
+  } catch (err) {
+
+    console.error(err);
+    msg.style.color = "red";
+    msg.innerText = "❌ Server error.";
+
+  }
 
 };
