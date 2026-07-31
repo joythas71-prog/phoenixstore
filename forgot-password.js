@@ -74,3 +74,15 @@ window.sendOTP = async function () {
   }
 
 };
+
+window.verifyOTP = async function () {
+
+  alert("verifyOTP() called");
+
+};
+
+window.updatePassword = async function () {
+
+  alert("updatePassword() called");
+
+};
