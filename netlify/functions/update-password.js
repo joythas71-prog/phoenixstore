@@ -10,11 +10,6 @@ exports.handler = async (event) => {
 
     const { email, password } = JSON.parse(event.body);
 
-    console.log("Received email:", email);
-
-console.log(
-  users.map(u => u.email)
-);
 
     if (!email || !password) {
       return {
@@ -27,14 +22,17 @@ console.log(
     }
 
     // Find user
-    const {
-      data: { users },
-      error: userError
-    } = await supabase.auth.admin.listUsers();
+const {
+  data: { users },
+  error: userError
+} = await supabase.auth.admin.listUsers();
 
-    if (userError) throw userError;
+if (userError) throw userError;
 
-    const user = users.find(u => u.email === email);
+console.log("Received email:", email);
+console.log(users.map(u => u.email));
+
+const user = users.find(u => u.email === email);
 
     if (!user) {
       return {
