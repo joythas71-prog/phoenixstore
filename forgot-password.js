@@ -77,12 +77,66 @@ window.sendOTP = async function () {
 
 window.verifyOTP = async function () {
 
-  alert("verifyOTP() called");
+  const email = document
+    .getElementById("email")
+    .value
+    .trim();
 
-};
+  const otp = document
+    .getElementById("otp")
+    .value
+    .trim();
 
-window.updatePassword = async function () {
+  if (!otp) {
+    msg.style.color = "red";
+    msg.innerText = "❌ Please enter the verification code.";
+    return;
+  }
 
-  alert("updatePassword() called");
+  try {
+
+    const res = await fetch(
+      "/.netlify/functions/verify-reset-otp",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email,
+          otp
+        })
+      }
+    );
+
+    const result = await res.json();
+
+    if (!result.success) {
+      msg.style.color = "red";
+      msg.innerText = "❌ " + result.error;
+      return;
+    }
+
+    msg.style.color = "lime";
+    msg.innerText = "✅ Verification successful.";
+
+    document
+      .getElementById("step2")
+      .classList
+      .add("hidden");
+
+    document
+      .getElementById("step3")
+      .classList
+      .remove("hidden");
+
+  } catch (err) {
+
+    console.error(err);
+
+    msg.style.color = "red";
+    msg.innerText = "❌ Server error.";
+
+  }
 
 };
